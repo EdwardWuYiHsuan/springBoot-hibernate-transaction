@@ -5,3 +5,6 @@ target/
 .classpath
 .project
 .settings/
+
+## Mac OS file store ##
+*.DS_Store
