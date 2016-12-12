@@ -1,0 +1,7 @@
+## build class area ##
+target/
+
+## IDE setting file ##
+.classpath
+.project
+.settings/
