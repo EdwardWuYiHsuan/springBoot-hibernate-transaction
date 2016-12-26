@@ -10,7 +10,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
+
+import com.edward.SpringBoot.util.Utils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -24,6 +28,7 @@ public class User {
 	@Column(unique = true)
 	private String email;
 	@NotNull
+	@JsonIgnore  // Spring Framework's responsebody use Jackson library to response POJO json data.
 	private String password;
 	private String phone;
 	@NotNull
@@ -52,6 +57,9 @@ public class User {
 	}
 	
 	public void setEmail(String email) {
+		if (!Utils.validateEmail(email))
+			throw new IllegalArgumentException("invalid-email");
+			
 		this.email = email;
 	}
 	
@@ -60,6 +68,9 @@ public class User {
 	}
 	
 	public void setPassword(String password) {
+		if (StringUtils.isBlank(password.trim()))
+			throw new IllegalArgumentException("invalid-password");
+		
 		this.password = password;
 	}
 	

@@ -4,6 +4,7 @@ package com.edward.SpringBoot.service;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.edward.SpringBoot.dao.UserDao;
@@ -15,36 +16,46 @@ import com.edward.SpringBoot.models.User;
 public class UserService {
 	
 	@Autowired
-	UserDao userDao;
+	public UserDao userDao;
 	
 	
 	public void createUser(User user) throws ApiException
 	{
 		try {
 			userDao.save(user);
-		} catch (ConstraintViolationException e) {
-			throw new ApiException(APICode.recordUniqueValue, "record-unique-value");
+		} catch (DataIntegrityViolationException e) {	// Belong to Spring Framework's Exception，Spring wrap hibernate's exception which execution sql cause fail.
+			if (e.getCause() instanceof ConstraintViolationException) {
+				throw new ApiException(APICode.recordUniqueValue, "record-unique-value");
+			} else {
+				throw new ApiException(APICode.Other, e.getMessage());
+			}
 		}
 	}
 	
-	public void updateUser(User originUser, String name, String email, String password, String phone) throws ApiException
+	public void updateUser(Long userId, User updateUser) throws ApiException
 	{
 		try {
-			if (StringUtils.isNotBlank(name))
-				originUser.setName(name);
-			if (StringUtils.isNotBlank(email))
-				originUser.setEmail(email);
-			if (StringUtils.isNotBlank(password))
-				originUser.setPassword(password);
-			if (StringUtils.isNotBlank(phone))
-				originUser.setPhone(phone);
+			User user = this.getUser(userId);
+			if (null == user)
+				throw new ApiException(APICode.InvalidParameter, "invalid-user-id");
 			
-			userDao.save(originUser);
+			if (StringUtils.isNotBlank(updateUser.getName()))
+				user.setName(updateUser.getName());
+			if (StringUtils.isNotBlank(updateUser.getEmail()))
+				user.setEmail(updateUser.getEmail());
+			if (StringUtils.isNotBlank(updateUser.getPassword()))
+				user.setPassword(updateUser.getPassword());
+			if (StringUtils.isNotBlank(updateUser.getPhone()))
+				user.setPhone(updateUser.getPhone());
 			
-		} catch (ConstraintViolationException e) {
-			throw new ApiException(APICode.recordUniqueValue, "record-unique-value");
-		} catch (Exception e) {
-			throw new ApiException(APICode.Other, e);
+			userDao.save(user);
+			
+		} catch (DataIntegrityViolationException e) {
+			if (e.getCause() instanceof ConstraintViolationException) {
+				throw new ApiException(APICode.recordUniqueValue, "record-unique-value");
+			} else {
+				throw new ApiException(APICode.Other, e.getMessage());
+			}
 		}
 	}
 	
