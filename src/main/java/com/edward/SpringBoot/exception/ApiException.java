@@ -1,5 +1,7 @@
 package com.edward.SpringBoot.exception;
 
+
+@SuppressWarnings("serial")
 public class ApiException extends Exception {
 	
 	private APICode code;

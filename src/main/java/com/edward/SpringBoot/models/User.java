@@ -17,20 +17,25 @@ import com.edward.SpringBoot.util.Utils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
 	private String name;
+	
 	@NotNull
 	@Column(unique = true)
 	private String email;
+	
 	@NotNull
-	@JsonIgnore  // Spring Framework's responsebody use Jackson library to response POJO json data.
+	@JsonIgnore  // Spring Framework's @ResponseBody use 'Jackson library' to response POJO json data.
 	private String password;
+	
 	private String phone;
+	
 	@NotNull
 	@Type(type = "timestamp")
 	private Date creationDate;

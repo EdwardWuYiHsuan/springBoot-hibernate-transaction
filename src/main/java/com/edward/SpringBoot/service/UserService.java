@@ -1,6 +1,8 @@
 package com.edward.SpringBoot.service;
 
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,24 @@ public class UserService {
 	@Autowired
 	public UserDao userDao;
 	
+	
+	public Iterable<User> getUserList()
+	{
+		return userDao.findAll();
+	}
+	
+	public User getUser(Long userId) throws ApiException
+	{
+		if (!userDao.exists(userId))
+			throw new ApiException(APICode.InvalidParameter, "invalid-user-id");
+		
+		return userDao.findOne(userId);
+	}
+	
+	public List<User> getUserByName(String name)
+	{
+		return userDao.findUserByName(name);
+	}
 	
 	public void createUser(User user) throws ApiException
 	{
@@ -66,19 +86,5 @@ public class UserService {
 		
 		userDao.delete(userId);
 	}
-	
-	public Iterable<User> getUserList()
-	{
-		return userDao.findAll();
-	}
-	
-	public User getUser(Long userId) throws ApiException
-	{
-		if (!userDao.exists(userId))
-			throw new ApiException(APICode.InvalidParameter, "invalid-user-id");
-		
-		return userDao.findOne(userId);
-	}
-	
 	
 }
