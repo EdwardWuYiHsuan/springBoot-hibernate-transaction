@@ -15,7 +15,7 @@ public class ApiException extends Exception {
 	public ApiException(APICode code, String message)
 	{
 		super(message);
-		this. code = code;
+		this.code = code;
 	}
 	
 	public ApiException(APICode code, String message, Throwable cause)
